@@ -25,4 +25,16 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --logger trx 
+    - name: Test Report
+      uses: phoenix-actions/test-reporting@v8
+      id: test-report               
+      if: success() || failure()    
+      with:
+        name: Tests            
+        path: /home/runner/work/RegisterPeople.Api/RegisterPeople.Api/src/Tests/TestResults/*.trx 
+        reporter: dotnet-trx
+    - name: Read output variables
+      run: |
+        echo "url is ${{ steps.test-report.outputs.runHtmlUrl }}"
+
